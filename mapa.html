@@ -1,0 +1,860 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#123b5d">
+    <title>Vigilância da dengue | Mapa</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .session-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .session-label {
+            padding: 7px 11px;
+            border-radius: 20px;
+            background: #e8f0fa;
+            color: #14508f;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .logout-button,
+        .map-action {
+            min-height: 40px;
+            padding: 0 13px;
+            border: 0;
+            border-radius: 8px;
+            background: #123b5d;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .logout-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            background: #edf4f9;
+            color: #123b5d;
+            text-decoration: none;
+        }
+
+        .map-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 0 0 16px;
+        }
+
+        .map-action.secondary {
+            background: #1a5fa8;
+        }
+
+        .report-panel {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+            margin-bottom: 16px;
+            padding: 18px;
+        }
+
+        .report-panel[hidden] {
+            display: none;
+        }
+
+        .report-panel .form-field-wide {
+            grid-column: 1 / -1;
+        }
+
+        .report-panel .form-actions {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .report-panel button:disabled {
+            opacity: .55;
+            cursor: not-allowed;
+        }
+
+        .map-feedback {
+            min-height: 1.5em;
+            margin: 0 0 12px;
+            color: #53677a;
+            font-size: 13px;
+        }
+
+        .map-feedback.error {
+            color: #b42318;
+        }
+
+        .map-feedback.success {
+            color: #178b79;
+        }
+
+        .legend-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 14px;
+            margin: 0 0 14px;
+            color: #53677a;
+            font-size: 12px;
+        }
+
+        .legend-items span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .leaflet-marker-icon.record-marker {
+            display: grid;
+            place-items: center;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            box-shadow: 0 2px 6px #17304466;
+            color: #fff;
+            font-size: 11px;
+        }
+
+        .leaflet-popup-content {
+            min-width: 190px;
+        }
+
+        .popup-title {
+            display: block;
+            margin-bottom: 7px;
+            color: #123b5d;
+        }
+
+        .popup-details {
+            margin: 0 0 8px;
+            line-height: 1.55;
+        }
+
+        .popup-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .popup-actions button {
+            padding: 6px 8px;
+            border: 0;
+            border-radius: 5px;
+            background: #edf4f9;
+            color: #123b5d;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .popup-actions button.danger {
+            background: #fff0ee;
+            color: #b42318;
+        }
+
+        @media (max-width: 760px) {
+            .header-inner {
+                flex-wrap: wrap;
+                padding: 10px 0;
+            }
+
+            .session-bar {
+                gap: 7px;
+            }
+
+            .session-label {
+                font-size: 10px;
+            }
+
+            .logout-button {
+                min-height: 36px;
+                padding: 0 9px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .report-panel {
+                grid-template-columns: 1fr;
+                padding: 14px;
+            }
+
+            .report-panel .form-field-wide {
+                grid-column: auto;
+            }
+
+            .map-actions {
+                display: grid;
+                grid-template-columns: 1fr;
+            }
+
+            .map-action {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="site-header">
+        <div class="header-inner">
+
+            <a class="brand" href="index.html">
+                <span class="brand-mark">
+                    <i class="bi bi-heart-pulse-fill" aria-hidden="true"></i>
+                </span>
+                Vigilância da Dengue
+            </a>
+
+            <div class="session-bar" aria-label="Sessão atual">
+                <span class="session-label" id="session-label"></span>
+
+                <!-- Agora é um link para a página inicial -->
+                <a class="logout-button" href="index.html">
+                    <i class="bi bi-house-door" aria-hidden="true"></i>
+                    Início
+                </a>
+            </div>
+
+        </div>
+    </header>
+
+    <main class="page-container">
+
+        <section class="page-intro">
+            <p class="eyebrow">
+                VIGILÂNCIA EPIDEMIOLÓGICA · NOVA LONDRINA - PR
+            </p>
+
+            <h1>Mapa de dengue</h1>
+
+            <p>
+                Consulte casos e focos reportados. A localização dos registros é aproximada e não substitui a avaliação da vigilância em saúde.
+            </p>
+        </section>
+
+        <div class="map-actions" aria-label="Ações do mapa">
+
+            <button class="map-action secondary" id="report-focus" type="button">
+                <i class="bi bi-flag" aria-hidden="true"></i>
+                Reportar possível foco
+            </button>
+
+            <button class="map-action" id="add-case" type="button" hidden>
+                <i class="bi bi-plus-circle" aria-hidden="true"></i>
+                Cadastrar caso confirmado
+            </button>
+
+        </div>
+
+        <form class="card report-panel" id="record-form" hidden>
+
+            <div class="form-field form-field-wide">
+                <strong id="form-title">Reportar possível foco</strong>
+                <span class="muted-text" id="form-instructions">
+                    Clique no mapa para selecionar o local do foco.
+                </span>
+            </div>
+
+            <div class="form-field">
+                <label for="record-address">Endereço ou referência (opcional)</label>
+                <input
+                    id="record-address"
+                    name="address"
+                    maxlength="120"
+                    placeholder="Ex.: próximo à praça do bairro"
+                >
+            </div>
+
+            <div class="form-field">
+                <label for="record-description">Observação (opcional)</label>
+                <input
+                    id="record-description"
+                    name="description"
+                    maxlength="200"
+                    placeholder="Descreva brevemente o local"
+                >
+            </div>
+
+            <div class="form-actions form-field-wide">
+
+                <button class="button button-primary" id="save-record" type="submit" disabled>
+                    Salvar registro
+                </button>
+
+                <button class="logout-button" id="cancel-record" type="button">
+                    Cancelar
+                </button>
+
+                <span class="muted-text" id="selected-position">
+                    Nenhum local selecionado
+                </span>
+
+            </div>
+
+        </form>
+
+        <p class="map-feedback" id="map-feedback" role="status" aria-live="polite"></p>
+
+        <section class="card map-card" aria-label="Mapa epidemiológico da dengue">
+
+            <div class="map-heading">
+
+                <div>
+                    <h2>Nova Londrina - PR</h2>
+
+                    <p class="muted-text">
+                        <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                        Selecione um marcador para consultar detalhes.
+                    </p>
+                </div>
+
+                <span class="map-legend">
+                    <span aria-hidden="true"></span>
+                    Casos e focos
+                </span>
+
+            </div>
+
+            <div class="legend-items" aria-label="Legenda dos marcadores">
+
+                <span>
+                    <i class="legend-dot" style="background:#dc2626" aria-hidden="true"></i>
+                    Caso confirmado
+                </span>
+
+                <span>
+                    <i class="legend-dot" style="background:#e58a12" aria-hidden="true"></i>
+                    Foco pendente
+                </span>
+
+                <span>
+                    <i class="legend-dot" style="background:#16836f" aria-hidden="true"></i>
+                    Foco validado
+                </span>
+
+                <span>
+                    <i class="legend-dot" style="background:#7b8794" aria-hidden="true"></i>
+                    Rejeitado
+                </span>
+
+            </div>
+
+            <div
+                id="map"
+                class="map-canvas"
+                role="application"
+                aria-label="Mapa interativo de casos e focos de dengue"
+            >
+                <p class="map-loading">Carregando mapa…</p>
+            </div>
+
+            <p class="map-disclaimer">
+                <i class="bi bi-info-circle" aria-hidden="true"></i>
+                Mapa base do OpenStreetMap. Os registros são armazenados apenas neste navegador; não inclua dados pessoais ou informações de pacientes.
+            </p>
+
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+        Vigilância da Dengue · Protótipo demonstrativo para Nova Londrina - PR
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="navigation.js"></script>
+
+    <script>
+    (function () {
+        'use strict';
+
+        var SESSION_KEY = 'vitaliscoreSession';
+        var RECORDS_KEY = 'vitaliscoreDengueRecords';
+
+        var session;
+
+        try {
+            session = JSON.parse(
+                sessionStorage.getItem(SESSION_KEY) || 'null'
+            );
+        } catch (error) {
+            session = null;
+        }
+
+        if (!session || (session.role !== 'population' && session.role !== 'health')) {
+            window.location.replace('login.html');
+            return;
+        }
+
+        var isHealthTeam = session.role === 'health';
+
+        var feedback = document.getElementById('map-feedback');
+        var form = document.getElementById('record-form');
+
+        var selectedPosition = null;
+        var recordMode = null;
+        var markers = [];
+        var records = [];
+        var storageReady = true;
+        var map;
+
+        document.getElementById('session-label').textContent =
+            (isHealthTeam ? 'Administrador da Saúde' : 'População') +
+            ' · ' +
+            (session.name || 'Visitante');
+
+        document.getElementById('report-focus').hidden = !isHealthTeam;
+        document.getElementById('add-case').hidden = !isHealthTeam;
+
+        function showFeedback(message, kind) {
+            feedback.textContent = message;
+            feedback.className = 'map-feedback' + (kind ? ' ' + kind : '');
+        }
+
+        function validRecord(record) {
+            return record &&
+                typeof record.id === 'string' &&
+                (record.type === 'focus' || record.type === 'case') &&
+                typeof record.lat === 'number' &&
+                typeof record.lng === 'number' &&
+                Number.isFinite(record.lat) &&
+                Number.isFinite(record.lng) &&
+                record.lat >= -90 &&
+                record.lat <= 90 &&
+                record.lng >= -180 &&
+                record.lng <= 180;
+        }
+
+        try {
+            var storedRecords = JSON.parse(
+                localStorage.getItem(RECORDS_KEY) || '[]'
+            );
+
+            if (!Array.isArray(storedRecords) || !storedRecords.every(validRecord)) {
+                throw new Error('Formato de registros inválido.');
+            }
+
+            records = storedRecords;
+
+        } catch (error) {
+            storageReady = false;
+
+            showFeedback(
+                'Não foi possível ler os registros salvos. Os dados não foram alterados; verifique o armazenamento do navegador.',
+                'error'
+            );
+        }
+
+        if (!window.L) {
+            document.getElementById('map').textContent =
+                'Não foi possível carregar o mapa. Verifique sua conexão e atualize a página.';
+
+            showFeedback(
+                'A biblioteca do mapa não foi carregada. Verifique sua conexão com a internet.',
+                'error'
+            );
+
+            return;
+        }
+
+        var loadingMessage = document.querySelector('.map-loading');
+
+        if (loadingMessage) {
+            loadingMessage.remove();
+        }
+
+        map = L.map('map').setView([-22.7644, -52.9869], 14);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        function colorFor(record) {
+            if (record.type === 'case') return '#dc2626';
+            if (record.status === 'Rejeitado') return '#7b8794';
+            if (record.status === 'Validado pela saúde') return '#16836f';
+
+            return '#e58a12';
+        }
+
+        function renderMarkers() {
+            markers.forEach(function (marker) {
+                marker.remove();
+            });
+
+            markers = records.map(function (record) {
+
+                var marker = L.marker(
+                    [record.lat, record.lng],
+                    {
+                        icon: L.divIcon({
+                            className: 'record-marker',
+
+                            html: record.type === 'case'
+                                ? '<i class="bi bi-activity" aria-hidden="true"></i>'
+                                : '<i class="bi bi-flag-fill" aria-hidden="true"></i>',
+
+                            iconSize: [28, 28],
+                            iconAnchor: [14, 14]
+                        })
+                    }
+                ).addTo(map);
+
+                marker.getElement().style.backgroundColor = colorFor(record);
+
+                marker.bindPopup(popupContent(record));
+
+                return marker;
+            });
+        }
+
+        function popupContent(record) {
+
+            var content = document.createElement('div');
+            var title = document.createElement('strong');
+            var details = document.createElement('p');
+            var actionButtons = document.createElement('div');
+
+            title.className = 'popup-title';
+
+            title.textContent = record.type === 'case'
+                ? 'Caso confirmado'
+                : 'Foco reportado';
+
+            details.className = 'popup-details';
+
+            details.textContent =
+                'Data: ' + new Date(record.createdAt).toLocaleString('pt-BR') +
+                '\nTipo: ' + (record.type === 'case'
+                    ? 'Caso confirmado pela saúde'
+                    : 'Foco reportado pela população') +
+                '\nEndereço: ' + (record.address || 'Não informado') +
+                '\nCoordenadas: ' + record.lat.toFixed(5) + ', ' + record.lng.toFixed(5) +
+                '\nStatus: ' + (record.status || 'Pendente de verificação') +
+                (record.description ? '\nObservação: ' + record.description : '');
+
+            details.style.whiteSpace = 'pre-line';
+
+            actionButtons.className = 'popup-actions';
+
+            content.append(title, details);
+
+            if (isHealthTeam) {
+
+                if (record.type === 'focus') {
+
+                    addPopupButton(actionButtons, 'Validar foco', function () {
+                        updateRecord(record.id, {
+                            status: 'Validado pela saúde'
+                        });
+                    });
+
+                    addPopupButton(actionButtons, 'Confirmar caso', function () {
+                        updateRecord(record.id, {
+                            type: 'case',
+                            status: 'Caso confirmado'
+                        });
+                    });
+                }
+
+                if (record.type === 'case' || record.status !== 'Rejeitado') {
+
+                    addPopupButton(actionButtons, 'Rejeitar', function () {
+                        updateRecord(record.id, {
+                            status: 'Rejeitado'
+                        });
+                    });
+
+                } else {
+
+                    addPopupButton(actionButtons, 'Reabrir foco', function () {
+                        updateRecord(record.id, {
+                            status: 'Pendente de verificação'
+                        });
+                    });
+                }
+
+                addPopupButton(actionButtons, 'Excluir', function () {
+                    if (window.confirm('Deseja excluir este marcador?')) {
+                        removeRecord(record.id);
+                    }
+                }, true);
+
+                content.appendChild(actionButtons);
+            }
+
+            return content;
+        }
+
+        function addPopupButton(container, label, action, isDanger) {
+
+            var button = document.createElement('button');
+
+            button.type = 'button';
+            button.textContent = label;
+
+            if (isDanger) {
+                button.className = 'danger';
+            }
+
+            button.addEventListener('click', action);
+
+            container.appendChild(button);
+        }
+
+        function persist(nextRecords) {
+
+            if (!storageReady) {
+
+                showFeedback(
+                    'Não foi possível salvar: o armazenamento contém dados inválidos. Os registros atuais foram preservados.',
+                    'error'
+                );
+
+                return false;
+            }
+
+            try {
+
+                localStorage.setItem(
+                    RECORDS_KEY,
+                    JSON.stringify(nextRecords)
+                );
+
+                records = nextRecords;
+
+                renderMarkers();
+
+                showFeedback(
+                    'Alterações salvas neste navegador.',
+                    'success'
+                );
+
+                return true;
+
+            } catch (error) {
+
+                showFeedback(
+                    'Não foi possível salvar no navegador. Verifique o espaço disponível e as permissões de armazenamento.',
+                    'error'
+                );
+
+                return false;
+            }
+        }
+
+        function updateRecord(id, changes) {
+
+            var nextRecords = records.map(function (record) {
+
+                return record.id === id
+                    ? Object.assign({}, record, changes, {
+                        updatedAt: new Date().toISOString()
+                    })
+                    : record;
+            });
+
+            if (persist(nextRecords)) {
+                map.closePopup();
+            }
+        }
+
+        function removeRecord(id) {
+
+            var nextRecords = records.filter(function (record) {
+                return record.id !== id;
+            });
+
+            if (persist(nextRecords)) {
+                map.closePopup();
+            }
+        }
+
+        function beginRecord(mode) {
+
+            if (!isHealthTeam) {
+
+                showFeedback(
+                    'Somente a equipe de saúde pode publicar registros.',
+                    'error'
+                );
+
+                return;
+            }
+
+            if (!storageReady) {
+
+                showFeedback(
+                    'Não é possível cadastrar registros enquanto os dados salvos não puderem ser lidos.',
+                    'error'
+                );
+
+                return;
+            }
+
+            recordMode = mode;
+            selectedPosition = null;
+
+            form.reset();
+
+            document.getElementById('form-title').textContent =
+                mode === 'case'
+                    ? 'Cadastrar caso confirmado'
+                    : 'Reportar possível foco';
+
+            document.getElementById('form-instructions').textContent =
+                'Clique no mapa para selecionar o local do registro.';
+
+            document.getElementById('selected-position').textContent =
+                'Nenhum local selecionado';
+
+            document.getElementById('save-record').disabled = true;
+
+            form.hidden = false;
+
+            form.scrollIntoView({
+                behavior: 'auto',
+                block: 'center'
+            });
+
+            showFeedback('Selecione uma localização no mapa.', '');
+        }
+
+        document.getElementById('report-focus').addEventListener('click', function () {
+            beginRecord('focus');
+        });
+
+        document.getElementById('add-case').addEventListener('click', function () {
+            beginRecord('case');
+        });
+
+        document.getElementById('cancel-record').addEventListener('click', function () {
+
+            form.hidden = true;
+            recordMode = null;
+            selectedPosition = null;
+
+        });
+
+        map.on('click', function (event) {
+
+            if (!recordMode) return;
+
+            selectedPosition = event.latlng;
+
+            document.getElementById('selected-position').textContent =
+                'Local selecionado: ' +
+                selectedPosition.lat.toFixed(5) +
+                ', ' +
+                selectedPosition.lng.toFixed(5);
+
+            document.getElementById('form-instructions').textContent =
+                'Confira o local selecionado e salve o registro.';
+
+            document.getElementById('save-record').disabled = false;
+
+        });
+
+        form.addEventListener('submit', function (event) {
+
+            event.preventDefault();
+
+            if (!isHealthTeam) {
+
+                showFeedback(
+                    'Somente a equipe de saúde pode publicar registros.',
+                    'error'
+                );
+
+                return;
+            }
+
+            if (!recordMode || !selectedPosition) {
+
+                showFeedback(
+                    'Selecione um ponto no mapa antes de salvar.',
+                    'error'
+                );
+
+                return;
+            }
+
+            var now = new Date().toISOString();
+            var isCase = recordMode === 'case' && isHealthTeam;
+
+            var record = {
+
+                id: (window.crypto && window.crypto.randomUUID)
+                    ? window.crypto.randomUUID()
+                    : String(Date.now()) + '-' + Math.random().toString(36).slice(2),
+
+                type: isCase ? 'case' : 'focus',
+
+                status: isCase
+                    ? 'Caso confirmado'
+                    : 'Pendente de verificação',
+
+                address: document.getElementById('record-address').value.trim(),
+
+                description: document.getElementById('record-description').value.trim(),
+
+                lat: selectedPosition.lat,
+                lng: selectedPosition.lng,
+
+                createdAt: now,
+                createdBy: session.name || 'Visitante'
+            };
+
+            if (persist(records.concat(record))) {
+
+                form.hidden = true;
+                recordMode = null;
+                selectedPosition = null;
+
+            }
+
+        });
+
+        renderMarkers();
+
+        if (!storageReady) return;
+
+        showFeedback(
+            records.length
+                ? records.length + ' registro(s) carregado(s) do armazenamento local.'
+                : 'Nenhum caso ou foco registrado ainda.',
+            ''
+        );
+
+    })();
+    </script>
+
+</body>
+</html>

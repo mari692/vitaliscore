@@ -1,0 +1,846 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#123b5d">
+    <meta name="description" content="Consulte a programação, a disponibilidade de fichas e os avisos da unidade de saúde.">
+    <title>Início | VitalisCore</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+        :root {
+            --primary: #123b5d;
+            --primary-dark: #0b2b45;
+            --primary-soft: #e8f1f7;
+
+            --secondary: #647687;
+            --secondary-hover: #526474;
+            --secondary-soft: #edf1f4;
+
+            --bg: #f4f7fa;
+            --surface: #ffffff;
+            --surface-soft: #f8fafc;
+            --text: #182b3a;
+            --muted: #647687;
+            --line: #e1e9ef;
+
+            --warning: #b7791f;
+            --warning-soft: #fff5e5;
+
+            --danger: #a83d3d;
+            --danger-soft: #fff0f0;
+
+            --success: #24734d;
+            --success-soft: #e9f6ef;
+
+            --shadow: 0 10px 30px rgba(18, 59, 93, .07);
+            --radius: 18px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: "Inter", Arial, sans-serif;
+            line-height: 1.6;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        /* CABEÇALHO */
+
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background: rgba(255,255,255,.96);
+            border-bottom: 1px solid var(--line);
+            backdrop-filter: blur(12px);
+        }
+
+        .header-inner {
+            width: min(1160px, calc(100% - 40px));
+            min-height: 72px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 11px;
+            color: var(--primary);
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: -.5px;
+            white-space: nowrap;
+        }
+
+        .brand-mark {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: var(--primary);
+            color: #fff;
+            font-size: 21px;
+        }
+
+        .primary-navigation {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 13px;
+            border-radius: 10px;
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 600;
+            transition: .2s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: var(--primary-soft);
+            color: var(--primary);
+        }
+
+        .menu-toggle {
+            display: none;
+            width: 42px;
+            height: 42px;
+            border: 1px solid var(--line);
+            border-radius: 11px;
+            background: var(--surface);
+            color: var(--primary);
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        /* CONTEÚDO */
+
+        .page-container {
+            width: min(1160px, calc(100% - 40px));
+            margin: 34px auto 64px;
+        }
+
+        /* BANNER */
+
+        .welcome-banner {
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 30px;
+            min-height: 245px;
+            padding: 38px 42px;
+            border-radius: 24px;
+            background: linear-gradient(120deg, #123b5d, #1e5c87);
+            color: #fff;
+            box-shadow: 0 16px 34px rgba(18,59,93,.18);
+        }
+
+        .welcome-banner::after {
+            content: "";
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            right: 95px;
+            top: -180px;
+            border: 1px solid rgba(255,255,255,.13);
+            border-radius: 50%;
+            box-shadow:
+                0 0 0 35px rgba(255,255,255,.04),
+                0 0 0 75px rgba(255,255,255,.035);
+        }
+
+        .welcome-content {
+            position: relative;
+            z-index: 1;
+            max-width: 690px;
+        }
+
+        .eyebrow {
+            margin: 0 0 8px;
+            color: #6e9fc2;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.7px;
+        }
+
+        .welcome-banner .eyebrow {
+            color: #c4ddec;
+        }
+
+        .welcome-banner h1 {
+            margin: 0 0 10px;
+            font-size: clamp(30px, 4vw, 43px);
+            line-height: 1.15;
+            letter-spacing: -1.5px;
+        }
+
+        .welcome-banner p:not(.eyebrow) {
+            max-width: 610px;
+            margin: 0;
+            color: #e0ebf2;
+            font-size: 14px;
+        }
+
+        .welcome-icon {
+            position: relative;
+            z-index: 1;
+            width: 118px;
+            height: 118px;
+            flex: 0 0 118px;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(255,255,255,.25);
+            border-radius: 34px;
+            background: rgba(255,255,255,.12);
+            color: #fff;
+            font-size: 57px;
+        }
+
+        /* BOTÕES */
+
+        /* TODOS OS BOTÕES EM AZUL */
+
+button,
+.button,
+.button-primary,
+.button-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-height: 43px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 10px;
+    background: var(--primary);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    transition: .2s ease;
+    cursor: pointer;
+}
+
+button:hover,
+.button:hover,
+.button-primary:hover,
+.button-secondary:hover {
+    background: var(--primary-dark);
+    color: #fff;
+    transform: translateY(-1px);
+}
+        
+        .section-block {
+            margin-top: 34px;
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 17px;
+        }
+
+        .section-heading .eyebrow {
+            margin-bottom: 4px;
+        }
+
+        .section-heading h2 {
+            margin: 0;
+            color: var(--text);
+            font-size: 22px;
+            letter-spacing: -.65px;
+        }
+
+        .muted-text {
+            color: var(--muted);
+        }
+
+        /* CARDS */
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 17px;
+        }
+
+        .card {
+            min-width: 0;
+            padding: 22px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: var(--surface);
+            box-shadow: var(--shadow);
+        }
+
+        .schedule-card {
+            grid-column: 1 / -1;
+        }
+
+        .card-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .card-icon {
+            width: 43px;
+            height: 43px;
+            flex: 0 0 43px;
+            display: grid;
+            place-items: center;
+            border-radius: 13px;
+            background: var(--primary-soft);
+            color: var(--primary);
+            font-size: 20px;
+        }
+
+        .card-label {
+            margin: 13px 0 3px;
+            color: var(--muted);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .stat-number {
+            margin: 0;
+            color: var(--primary);
+            font-size: 38px;
+            font-weight: 800;
+            line-height: 1.2;
+            letter-spacing: -1px;
+        }
+
+        .card-description {
+            margin: 7px 0 0;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        /* HORÁRIO */
+
+        .schedule-time {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-top: 16px;
+            padding: 17px;
+            border: 1px solid #d8e6f0;
+            border-radius: 13px;
+            background: var(--surface-soft);
+        }
+
+        .schedule-time-icon {
+            width: 45px;
+            height: 45px;
+            flex: 0 0 45px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: var(--primary-soft);
+            color: var(--primary);
+            font-size: 21px;
+        }
+
+        .schedule-hours {
+            color: var(--primary);
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -.4px;
+        }
+
+        .schedule-caption {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .open-label {
+            margin-left: auto;
+            padding: 6px 10px;
+            border-radius: 30px;
+            background: var(--success-soft);
+            color: var(--success);
+            font-size: 10px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        /* AVISOS */
+
+        .notice-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 17px;
+        }
+
+        .notice-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .notice-card h3 {
+            margin: 1px 0 6px;
+            font-size: 15px;
+            letter-spacing: -.2px;
+        }
+
+        .notice-card p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .notice-icon {
+            width: 42px;
+            height: 42px;
+            flex: 0 0 42px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: var(--primary-soft);
+            color: var(--primary);
+            font-size: 19px;
+        }
+
+        .notice-card.holiday {
+            border-left: 4px solid var(--warning);
+        }
+
+        .notice-card.holiday .notice-icon {
+            background: var(--warning-soft);
+            color: var(--warning);
+        }
+
+        .notice-card.dengue {
+            border-left: 4px solid var(--danger);
+        }
+
+        .notice-card.dengue .notice-icon {
+            background: var(--danger-soft);
+            color: var(--danger);
+        }
+
+        .notice-card .button {
+            margin-top: 13px;
+        }
+
+        /* RODAPÉ */
+
+        .site-footer {
+            padding: 24px 20px;
+            border-top: 1px solid var(--line);
+            background: var(--surface);
+            color: var(--muted);
+            text-align: center;
+            font-size: 11px;
+        }
+
+        /* RESPONSIVIDADE */
+
+        @media (max-width: 760px) {
+            .header-inner {
+                width: min(100% - 30px, 1160px);
+            }
+
+            .menu-toggle {
+                display: grid;
+                place-items: center;
+            }
+
+            .primary-navigation {
+                position: absolute;
+                top: calc(100% + 1px);
+                left: 0;
+                right: 0;
+                display: none;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 4px;
+                padding: 12px 20px 17px;
+                border-bottom: 1px solid var(--line);
+                background: var(--surface);
+            }
+
+            .primary-navigation.open {
+                display: flex;
+            }
+
+            .nav-link {
+                padding: 12px;
+            }
+
+            .page-container {
+                width: min(100% - 30px, 1160px);
+                margin-top: 22px;
+            }
+
+            .welcome-banner {
+                min-height: 220px;
+                padding: 29px;
+            }
+
+            .welcome-icon {
+                width: 85px;
+                height: 85px;
+                flex-basis: 85px;
+                font-size: 40px;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .welcome-banner {
+                padding: 25px 22px;
+            }
+
+            .welcome-icon {
+                display: none;
+            }
+
+            .welcome-banner h1 {
+                font-size: 30px;
+            }
+
+            .overview-grid,
+            .notice-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .schedule-card {
+                grid-column: auto;
+            }
+
+            .section-heading h2 {
+                font-size: 19px;
+            }
+
+            .card {
+                padding: 19px;
+            }
+
+            .schedule-time {
+                align-items: flex-start;
+                flex-wrap: wrap;
+                gap: 11px;
+            }
+
+            .open-label {
+                margin-left: 56px;
+            }
+
+            .stat-number {
+                font-size: 34px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="site-header">
+        <div class="header-inner">
+
+            <a class="brand" href="index.html" aria-label="VitalisCore - Início">
+                <span class="brand-mark">
+                    <i class="bi bi-heart-pulse-fill" aria-hidden="true"></i>
+                </span>
+                VitalisCore
+            </a>
+
+            <button class="menu-toggle" type="button"
+                    aria-label="Abrir menu"
+                    aria-expanded="false"
+                    aria-controls="primary-navigation">
+                <i class="bi bi-list" aria-hidden="true"></i>
+            </button>
+
+            <nav class="primary-navigation" id="primary-navigation"
+                 aria-label="Navegação principal">
+
+                <a class="nav-link active" href="index.html" aria-current="page">
+                    <i class="bi bi-house-door" aria-hidden="true"></i>
+                    Início
+                </a>
+
+                <a class="nav-link" href="mapa.html">
+                    <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                    Mapa
+                </a>
+
+            </nav>
+        </div>
+    </header>
+
+    <main class="page-container">
+
+        <section class="welcome-banner" aria-labelledby="welcome-title">
+
+            <div class="welcome-content">
+
+                <p class="eyebrow">SAÚDE PERTO DE VOCÊ</p>
+
+                <h1 id="welcome-title">
+                    Seu cuidado começa aqui
+                </h1>
+
+                <p>
+                    Consulte a programação de atendimento, acompanhe a
+                    disponibilidade de fichas e fique por dentro dos avisos
+                    da unidade.
+                </p>
+
+            </div>
+
+            <div class="welcome-icon" aria-hidden="true">
+                <i class="bi bi-heart-pulse"></i>
+            </div>
+
+        </section>
+
+        <!-- PROGRAMAÇÃO E FICHAS -->
+
+        <section class="section-block" aria-labelledby="overview-title">
+
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">PROGRAMAÇÃO DO DIA</p>
+                    <h2 id="overview-title">Horário de atendimento</h2>
+                </div>
+            </div>
+
+            <article class="card schedule-card">
+
+                <div class="card-top">
+
+                    <div>
+                        <p class="card-label">ATENDIMENTO AO PÚBLICO</p>
+
+                        <h3 style="margin:0;font-size:17px;">
+                            Programação de hoje
+                        </h3>
+
+                        <p class="card-description">
+                            Confira o horário de funcionamento da unidade.
+                        </p>
+                    </div>
+
+                    <span class="card-icon">
+                        <i class="bi bi-clock-history" aria-hidden="true"></i>
+                    </span>
+
+                </div>
+
+                <div class="schedule-time">
+
+                    <span class="schedule-time-icon">
+                        <i class="bi bi-clock" aria-hidden="true"></i>
+                    </span>
+
+                    <div>
+                        <div class="schedule-hours">
+                            07h00 às 12h30
+                        </div>
+
+                        <div class="schedule-caption">
+                            Período de atendimento programado
+                        </div>
+                    </div>
+
+                    <span class="open-label">
+                        HORÁRIO INFORMADO
+                    </span>
+
+                </div>
+
+            </article>
+
+            <div class="overview-grid" style="margin-top:17px;">
+
+                <!-- FICHAS DISPONÍVEIS -->
+
+                <article class="card stat-card">
+
+                    <div class="card-top">
+                        <span class="card-icon">
+                            <i class="bi bi-ticket-perforated" aria-hidden="true"></i>
+                        </span>
+                    </div>
+
+                    <p class="card-label">FICHAS DISPONÍVEIS</p>
+
+                    <p class="stat-number" id="fichas-disponiveis">
+                        48
+                    </p>
+
+                    <button type="button" class="button-secondary">
+                        <i class="bi bi-ticket-perforated"></i>
+                        Reservar ficha
+                    </button>
+
+                    <p class="card-description">
+                        Fichas disponíveis para atendimento.
+                    </p>
+
+                </article>
+
+                <!-- FICHAS RESERVADAS -->
+
+                <article class="card stat-card">
+
+                    <div class="card-top">
+                        <span class="card-icon">
+                            <i class="bi bi-bookmark-check" aria-hidden="true"></i>
+                        </span>
+                    </div>
+
+                    <p class="card-label">FICHAS RESERVADAS</p>
+
+                    <p class="stat-number" id="fichas-reservadas">
+                        6
+                    </p>
+
+                    <p class="card-description">
+                        Fichas já reservadas.
+                    </p>
+
+                </article>
+
+            </div>
+
+        </section>
+
+        <!-- AVISOS -->
+
+        <section class="section-block" aria-labelledby="notices-title">
+
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">FIQUE INFORMADO</p>
+                    <h2 id="notices-title">Avisos da unidade</h2>
+                </div>
+            </div>
+
+            <div class="notice-grid">
+
+                <!-- AVISO DE FERIADO -->
+
+                <article class="card notice-card holiday">
+
+                    <span class="notice-icon">
+                        <i class="bi bi-calendar-x" aria-hidden="true"></i>
+                    </span>
+
+                    <div>
+                        <h3>Feriado da Consciência Negra</h3>
+
+                        <p>
+                            Não atenderemos no dia 20 de novembro por conta
+                            do feriado da Consciência Negra.
+                        </p>
+                    </div>
+
+                </article>
+
+                <!-- AVISO DE DENGUE -->
+
+                <article class="card notice-card dengue">
+
+                    <span class="notice-icon">
+                        <i class="bi bi-exclamation-triangle" aria-hidden="true"></i>
+                    </span>
+
+                    <div>
+                        <h3>Atenção: surto de dengue</h3>
+
+                        <p>
+                            Aviso sobre surto de dengue no Postinho das
+                            Mulheres. Consulte o mapa para verificar a
+                            localização da unidade.
+                        </p>
+
+                        <a class="button button-primary --blue"
+                           href="https://www.google.com/maps/search/?api=1&query=Postinho+das+Mulheres"
+                           target="_blank"
+                           rel="noopener noreferrer">
+
+                            <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
+                            Ver no mapa
+
+                        </a>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+        VitalisCore · Informação e acesso à saúde.
+    </footer>
+
+    <script>
+        const menuToggle = document.querySelector(".menu-toggle");
+        const navigation = document.querySelector("#primary-navigation");
+
+        menuToggle.addEventListener("click", () => {
+
+            const isOpen = navigation.classList.toggle("open");
+
+            menuToggle.setAttribute("aria-expanded", String(isOpen));
+
+            menuToggle.setAttribute(
+                "aria-label",
+                isOpen ? "Fechar menu" : "Abrir menu"
+            );
+
+            menuToggle.innerHTML = isOpen
+                ? '<i class="bi bi-x-lg" aria-hidden="true"></i>'
+                : '<i class="bi bi-list" aria-hidden="true"></i>';
+
+        });
+    </script>
+
+</body>
+</html>

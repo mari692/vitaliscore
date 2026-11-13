@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#123b5d">
+    <title>Agenda </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="brand" href="index.html"><span class="brand-mark"><i class="bi bi-heart-pulse-fill" aria-hidden="true"></i></span>Saúde Perto</a>
+            <button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="primary-navigation">
+                <i class="bi bi-list" aria-hidden="true"></i>
+            </button>
+            <nav class="primary-navigation" id="primary-navigation" aria-label="Navegação principal">
+                <a class="nav-link" href="index.html"><i class="bi bi-house-door" aria-hidden="true"></i>Início</a>
+                <a class="nav-link active" href="agenda.html" aria-current="page"><i class="bi bi-calendar2-week" aria-hidden="true"></i>Agenda</a>
+                <a class="nav-link" href="cadastro.html"><i class="bi bi-person-plus" aria-hidden="true"></i>Cadastro</a>
+                <a class="nav-link" href="mapa.html"><i class="bi bi-geo-alt" aria-hidden="true"></i>Mapa</a>
+            </nav>
+        </div>
+    </header>
+    <main class="page-container">
+        <section class="page-intro">
+            <p class="eyebrow">ORGANIZE SEU CUIDADO</p>
+            <h1>Minha agenda</h1>
+            <p>Escolha a unidade, a especialidade e uma data para consultar os horários disponíveis.</p>
+        </section>
+
+        <section class="filter-card card" aria-label="Filtros de atendimento">
+            <div class="form-field">
+                <label for="ubs">Unidade de saúde</label>
+                <select id="ubs">
+                    <option>UBS Jardim do Sol</option>
+                    <option>UBS Jardim Santana</option>
+                    <option>UBS Vila Rural</option>
+                </select>
+            </div>
+         
+            <div class="form-field">
+                <label for="especialidade">Especialidade</label>
+                <select id="especialidade">
+                    <option>Clínica geral</option>
+                    <option>Odontologia</option>
+                    <option>Pediatria</option>
+                    <option>Enfermagem</option>
+                </select>
+                
+            </div>
+          
+        </section>
+
+        <div class="agenda-layout">
+            <section class="card calendar-card" aria-label="Calendário de agendamentos">
+                <div class="calendar-header">
+                    <button class="icon-button" type="button" aria-label="Mês anterior" onclick="mudarMes(-1)"><i class="bi bi-chevron-left" aria-hidden="true"></i></button>
+                    <h2 id="nomeMes"></h2>
+                    <button class="icon-button" type="button" aria-label="Próximo mês" onclick="mudarMes(1)"><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+                </div>
+                <div class="dias" id="calendario"></div>
+            </section>
+            <section class="card selected-date-card">
+                <span class="card-icon"><i class="bi bi-calendar2-check" aria-hidden="true"></i></span>
+                <p class="eyebrow">ATENDIMENTO</p>
+                <h2>Data selecionada</h2>
+                <p id="dataSelecionada" class="muted-text">Selecione uma data.</p>
+                <div class="consultation-details" id="detalhes">Escolha uma data no calendário.</div>
+                <p class="helper-text">Agendamentos disponíveis são ilustrativos nesta versão demonstrativa.</p>
+            </section>
+        </div>
+
+        <section class="section-block" aria-labelledby="agenda-notices-title">
+            <div class="section-heading">
+                <div><p class="eyebrow">NOVIDADES</p><h2 id="agenda-notices-title">Avisos e notificações</h2></div>
+                <i class="bi bi-bell section-heading-icon" aria-hidden="true"></i>
+            </div>
+            <div class="notice-grid" id="listaAvisos"></div>
+        </section>
+    </main>
+    <footer class="site-footer">Saúde Perto · Informação e acesso à saúde em Nova Londrina</footer>
+    <script src="navigation.js"></script>
+    <script src="agenda.js"></script>
+</body>
+</html>

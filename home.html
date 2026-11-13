@@ -1,0 +1,89 @@
+/* CARDS DE FICHAS */
+.fichas-publicas {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.ficha-card {
+    padding: 22px;
+    border: 1px solid var(--line);
+    border-radius: 15px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+}
+
+.ficha-card span {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.ficha-card strong {
+    display: block;
+    margin-top: 5px;
+    font-size: 32px;
+    color: var(--primary);
+}
+
+/* AVISOS */
+.avisos-panel {
+    margin-top: 18px;
+}
+
+.aviso-item {
+    padding: 16px;
+    margin-top: 12px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface-2);
+}
+
+.aviso-item h3 {
+    margin: 0 0 7px;
+    font-size: 14px;
+}
+
+.aviso-item p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.aviso-dengue {
+    border-left: 4px solid var(--primary);
+}
+
+.aviso-feriado {
+    border-left: 4px solid var(--warning);
+}
+
+.aviso-mapa {
+    display: inline-flex;
+    margin-top: 12px;
+    padding: 10px 15px;
+    border-radius: 9px;
+    background: var(--primary);
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.aviso-mapa:hover {
+    background: var(--primary-dark);
+}
+
+@media (max-width: 560px) {
+    .fichas-publicas {
+        grid-template-columns: 1fr 1fr;
+        gap: 9px;
+    }
+
+    .ficha-card {
+        padding: 15px;
+    }
+
+    .ficha-card strong {
+        font-size: 27px;
+    }
+}
